@@ -2,11 +2,11 @@ import logo from './logo.svg';
 import './App.css';
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import Signup from 'Signup';
-import Login from 'login';
-import HomePage from 'HomePage';
-import PrivateRoute from 'PrivateRoute';
-import { AuthProvider } from 'AuthContext';
+import Signup from './Signup';
+import Login from './login';
+import HomePage from './HomePage';
+import PrivateRoute from './PrivateRoute';
+import { AuthProvider } from './AuthContext';
 
 function App() {
   return (
