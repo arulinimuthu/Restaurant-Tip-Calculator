@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { auth } from './firebaseConfig';
 import { signOut } from 'firebase/auth';
 
@@ -22,14 +22,39 @@ function HomePage() {
         });
       };
 
+      const [tipAmount, setTipAmount] = useState(0);
+
+      useEffect(() => {
+        if (Object.values(feedback).every((val) => val)) {
+          const emojiToTipMap = {
+            '😃': 15,
+            '😊': 10,
+            '😐': 5,
+            '☹️': 2,
+            '😠': 0,
+          };
+          const averageTip =
+            (emojiToTipMap[feedback.food] +
+              emojiToTipMap[feedback.service] +
+              emojiToTipMap[feedback.atmosphere] +
+              emojiToTipMap[feedback.overall]) /
+            4;
+          setTipAmount(((subtotal * averageTip) / 100).toFixed(2));
+        }
+      }, [feedback, subtotal]);
+
+
       return (
         <div>
-          <h1>Restaurant Tip Calculator</h1>
+          <h1>Restaurant Tip Advisor</h1>
           <input
             type="number"
             placeholder="Subtotal of bill"
             value={subtotal}
-            onChange={(e) => setSubtotal(e.target.value)}
+            onChange={(e) => {
+              const value = Number(e.target.value);
+              if (value >= 0) setSubtotal(value);
+            }}
           />
           <h2>User Experience</h2>
           <label>How was the food?
@@ -38,7 +63,7 @@ function HomePage() {
                 <button
                   key={index}
                   onClick={() => setFeedback({ ...feedback, food: emoji })}
-                  style={{ margin: "5px", fontSize: "1.5rem" }}
+                  style={{ margin: "5px", fontSize: "1.5rem",  backgroundColor: feedback.food === emoji ? "lightblue" : ""}}
                 >
                   {emoji}
                 </button>
@@ -51,7 +76,7 @@ function HomePage() {
                 <button
                   key={index}
                   onClick={() => setFeedback({ ...feedback, service: emoji })}
-                  style={{ margin: "5px", fontSize: "1.5rem" }}
+                  style={{ margin: "5px", fontSize: "1.5rem",  backgroundColor: feedback.service === emoji ? "lightblue" : ""}}
                 >
                   {emoji}
                 </button>
@@ -64,7 +89,7 @@ function HomePage() {
                 <button
                   key={index}
                   onClick={() => setFeedback({ ...feedback, atmosphere: emoji })}
-                  style={{ margin: "5px", fontSize: "1.5rem" }}
+                  style={{ margin: "5px", fontSize: "1.5rem",  backgroundColor: feedback.atmosphere === emoji ? "lightblue" : ""}}
                 >
                   {emoji}
                 </button>
@@ -77,13 +102,16 @@ function HomePage() {
                 <button
                   key={index}
                   onClick={() => setFeedback({ ...feedback, overall: emoji })}
-                  style={{ margin: "5px", fontSize: "1.5rem" }}
+                  style={{ margin: "5px", fontSize: "1.5rem",  backgroundColor: feedback.overall === emoji ? "lightblue" : ""}}
                 >
                   {emoji}
                 </button>
               ))}
             </div>
           </label>
+          <h3>
+            Tip Amount: ${tipAmount}
+          </h3>
           <button onClick={handleLogout}>Logout</button>
         </div>
       );
